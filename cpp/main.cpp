@@ -22,38 +22,46 @@ using namespace std;
 class Solution {
 public:
     vector<int> sortArray(vector<int>& nums) {
-        if (1 < nums.size()) {
-            mergeSort(nums.begin(), nums.end(), nums.size());
-        }
+        mergeSort(nums.begin(), nums.end(), nums.size());
         return nums;
     }
 
     template <typename I>
     void mergeSort(I left, I right, size_t size) {
-        auto mid = left;
-        std::advance(mid, size / 2);
+        if (1 < size) {
+            auto mid = left;
+            std::advance(mid, size / 2);
 
-        if (2 < size) {
-            // Recursively merge sort left and right halves.
-            mergeSort(left, mid, size / 2);
-            mergeSort(mid, right, right - mid);
+            if (2 < size) {
+                // Recursively merge sort left and right halves.
+                mergeSort(left, mid, size / 2);
+                mergeSort(mid, right, right - mid);
+            }
+
+            // Merge result.
+            typename I::value_type result[size];
+            typename I::value_type* o = result;
+            auto l = left;
+            auto r = mid;
+            while (l != mid && r != right) { *o++ = *l <= *r ? *l++ : *r++; }
+            while (l != mid) { *o++ = *l++; }
+            while (r != right) { *o++ = *r++; }
+
+            // Copy result over original data.
+            std::copy(result, result + size, left);
         }
-
-        // Merge result.
-        typename I::value_type result[size];
-        typename I::value_type* o = result;
-        auto l = left;
-        auto r = mid;
-        while (l != mid && r != right) { *o++ = *l <= *r ? *l++ : *r++; }
-        while (l != mid) { *o++ = *l++; }
-        while (r != right) { *o++ = *r++; }
-
-        // Copy result over original data.
-        std::copy(result, result + size, left);
     }
 };
 
 // [----------------(120 columns)---------------> Module Code Delimiter <---------------(120 columns)----------------]
+
+TEST_CASE("Case 0")
+{
+    cerr << "Case 0" << '\n';
+    vector<int> value{5};
+    CHECK(vector<int>{5} == Solution{}.sortArray(value));
+    cerr << '\n';
+}
 
 TEST_CASE("Case 1")
 {
